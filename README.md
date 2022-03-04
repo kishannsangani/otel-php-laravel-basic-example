@@ -62,3 +62,10 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Dependencies History
+
+- composer create-project laravel/laravel otel-php-laravel-basic-example
+- composer require guzzlehttp/psr7:2.1
+- composer remove php-http/guzzle6-adapter --no-update
+- composer require php-http/guzzle7-adapter --with-dependencies

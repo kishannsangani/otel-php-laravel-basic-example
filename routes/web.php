@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HelloController;
+use App\Http\Controllers\TreeBuilderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +20,6 @@ Route::get('/', function () {
 });
 
 Route::get('/hello', [HelloController::class, 'index']);
+Route::get('/treebuilder',  [TreeBuilderController::class, 'index']);
+Route::get('/treebuilder/{width}',  [TreeBuilderController::class, 'index']);
+Route::get('/treebuilder/{width}/{depth}',  [TreeBuilderController::class, 'index']);

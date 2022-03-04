@@ -69,3 +69,4 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 - composer require guzzlehttp/psr7:2.1
 - composer remove php-http/guzzle6-adapter --no-update
 - composer require php-http/guzzle7-adapter --with-dependencies
+- composer require open-telemetry/opentelemetry 

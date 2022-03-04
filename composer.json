@@ -11,6 +11,7 @@
         "laravel/framework": "^9.2",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "open-telemetry/opentelemetry": "^0.0.6",
         "php-http/guzzle7-adapter": "^1.0"
     },
     "require-dev": {

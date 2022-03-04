@@ -3,6 +3,16 @@
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
+use OpenTelemetry\Contrib\Jaeger\Exporter as JaegerExporter;
+use OpenTelemetry\Contrib\Zipkin\Exporter as ZipkinExporter;
+use OpenTelemetry\SDK\AbstractClock;
+use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
+use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
+use OpenTelemetry\SDK\Trace\SpanProcessor\MultiSpanProcessor;
+use OpenTelemetry\SDK\Trace\TracerProvider;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
+
 define('LARAVEL_START', microtime(true));
 
 /*
@@ -44,6 +54,34 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
+$jaegerExporter = new JaegerExporter(
+    'Hello World Web Server Jaeger',
+    'http://localhost:9412/api/v2/spans',
+    new Client(),
+    new HttpFactory(),
+    new HttpFactory()
+);
+
+$zipkinExporter = new ZipkinExporter(
+    'Hello World Web Server Zipkin',
+    'http://localhost:9411/api/v2/spans',
+    new Client(),
+    new HttpFactory(),
+    new HttpFactory()
+);
+
+$tracer = (new TracerProvider(
+                              new MultiSpanProcessor(
+                                                    new SimpleSpanProcessor($jaegerExporter),
+                                                    new BatchSpanProcessor($zipkinExporter, AbstractClock::getDefault())
+                                                    )
+                             )
+          )
+          ->getTracer('io.opentelemetry.contrib.php');
+
+$request = Request::createFromGlobals();
+$rootSpan = $tracer->spanBuilder($request->getUri())->startSpan();
+
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
@@ -53,3 +91,5 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
+
+$rootSpan->end();

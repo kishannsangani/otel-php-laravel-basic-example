@@ -81,6 +81,7 @@ $tracer = (new TracerProvider(
 
 $request = Request::createFromGlobals();
 $rootSpan = $tracer->spanBuilder($request->getUri())->startSpan();
+$rootScope = $rootSpan->activate();
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
@@ -92,4 +93,5 @@ $response = $kernel->handle(
 
 $kernel->terminate($request, $response);
 
+$rootScope->detach();
 $rootSpan->end();

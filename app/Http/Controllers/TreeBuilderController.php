@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use OpenTelemetry\SDK\Trace\TracerProvider;
+
 class TreeBuilderController extends Controller
 {
     private int $sleepInUs = 2000;
@@ -11,7 +13,7 @@ class TreeBuilderController extends Controller
         if ($currentDepth > $maxDepth) {
             return;
         }
-        global $tracer;
+        $tracer = TracerProvider::getDefaultTracer();
         $currentSpan = $tracer->spanBuilder('Child span('. $id . ')')->startSpan();
         $currentSpan->setAttribute('Generation', $currentDepth);
         $currentScope = $currentSpan->activate();
@@ -27,16 +29,15 @@ class TreeBuilderController extends Controller
         date_default_timezone_set('Asia/Kolkata');
         $date = date('d/m/Y h:i:s a', time());
 
-        global $tracer, $rootSpan;
+        global $rootSpan;
         if ($rootSpan) {
             /** @var Span $rootSpan */
             $rootSpan->setAttribute('Total Span Count', 1 + $width * $depth);
             $rootSpan->updateName('TreeBuilderController\\index dated ' . $date);
 
-            if($tracer) {
-                for ($i = 1; $i <= $width; $i++) {
-                    $this->recursion($i, 1, $depth);
-                }
+            $tracer = TracerProvider::getDefaultTracer();
+            for ($i = 1; $i <= $width; $i++) {
+                $this->recursion($i, 1, $depth);
             }
         }
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class TreeBuilderController extends Controller
 {
+    private int $sleepInUs = 2000;
     private function recursion($id, $currentDepth, $maxDepth) {
         if ($currentDepth > $maxDepth) {
             return;
@@ -14,7 +15,9 @@ class TreeBuilderController extends Controller
         $currentSpan = $tracer->spanBuilder('Child span('. $id . ')')->startSpan();
         $currentSpan->setAttribute('Generation', $currentDepth);
         $currentScope = $currentSpan->activate();
+        usleep($this->sleepInUs);
         $this->recursion($id, $currentDepth + 1, $maxDepth);
+        usleep($this->sleepInUs);
         $currentScope->detach();
         $currentSpan->end();
         return;

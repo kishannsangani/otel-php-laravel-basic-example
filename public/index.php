@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 
 use OpenTelemetry\Contrib\Jaeger\Exporter as JaegerExporter;
 use OpenTelemetry\Contrib\Zipkin\Exporter as ZipkinExporter;
-use OpenTelemetry\SDK\AbstractClock;
+use OpenTelemetry\SDK\Common\Time\ClockFactory;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
 use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\SpanProcessor\MultiSpanProcessor;
@@ -73,7 +73,7 @@ $zipkinExporter = new ZipkinExporter(
 $tracer = (new TracerProvider(
                               new MultiSpanProcessor(
                                                     new SimpleSpanProcessor($jaegerExporter),
-                                                    new BatchSpanProcessor($zipkinExporter, AbstractClock::getDefault())
+                                                    new BatchSpanProcessor($zipkinExporter, ClockFactory::getDefault())
                                                     )
                              )
           )
